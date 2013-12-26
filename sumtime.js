@@ -47,11 +47,34 @@ function makeApiCall() {
         var request = gapi.client.calendar.calendarList.list();
         
         // make the API request
-        request.execute(function (resp) {
-            console.log(resp);
-            $.each(resp.items, function (index, item) {
-                $("body").append("<div>" + item.summary + "</div>")
-            })
-        });
+        request.execute(displayCalendarList);
     });
+}
+
+// handle the calendar list
+function displayCalendarList(resp) {
+    console.log(resp); // TODO remove (eventually)
+
+    var container = $('<div></div>');
+    container.addClass('calendar-list-container');
+
+    $.each(resp.items, function (index, item) {
+        var el = $("<li></li>");
+
+        var button = $('<button></button>');
+        button.text(item.summary);
+        button.attr('data-calendar-id', item.id);
+        button.attr('onclick', 'sumTimes("' + item.id + '");');
+
+        el.append(button);
+        container.append(el);
+    });
+
+    $('body').append(container);
+}
+
+
+function sumTimes(calendarId) {
+    console.log(calendarId); // TODO remove
+
 }
