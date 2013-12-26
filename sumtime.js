@@ -1,13 +1,17 @@
-var clientId = '935106300740-kug08d5pcg9rl6u68trr5qeo4fonf1m4.apps.googleusercontent.com';
+/* Copyright (c) 2013 Isaac Dontje Lindell
+ * This is free software. See LICENSE for more information */
 
+
+
+/* oauth boilerplate */
+var clientId = '935106300740-kug08d5pcg9rl6u68trr5qeo4fonf1m4.apps.googleusercontent.com';
 var apiKey = 'AIzaSyAgnIILA5vo46DFldSndtc6luC3Nwlj8Is';
 
+// TODO we should only need readonly access
 var scopes = ['https://www.googleapis.com/auth/calendar',
               'https://www.googleapis.com/auth/calendar.readonly'];
 
-
 function handleClientLoad() {
-    // Step 2: Reference the API key
     gapi.client.setApiKey(apiKey);
     window.setTimeout(checkAuth, 1);
 }
@@ -28,18 +32,21 @@ function handleAuthResult(authResult) {
 }
 
 function handleAuthClick(event) {
-    // Step 3: get authorization to use private data
+    // get authorization to use private data
     gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: false}, handleAuthResult);
     return false;
 }
+/* end Oauth boilerplate */
 
-// Load the API and make an API call.  Display the results on the screen.
+
+// load the API and exercise it
 function makeApiCall() {
-    // Step 4: Load the GCalendar API
+    // load the GCalendar API
     gapi.client.load('calendar', 'v3', function () {
-        // Step 5: Assemble the API request to list all calendars
+        // Assemble the API request to list all calendars
         var request = gapi.client.calendar.calendarList.list();
-        // Step 6: Execute the API request
+        
+        // make the API request
         request.execute(function (resp) {
             console.log(resp);
             $.each(resp.items, function (index, item) {
