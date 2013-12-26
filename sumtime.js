@@ -1,6 +1,6 @@
-var clientId = '837050751313';
+var clientId = '935106300740-kug08d5pcg9rl6u68trr5qeo4fonf1m4.apps.googleusercontent.com';
 
-var apiKey = 'AIzaSyAdjHPT5Pb7Nu56WJ_nlrMGOAgUAtKjiPM';
+var apiKey = 'AIzaSyAgnIILA5vo46DFldSndtc6luC3Nwlj8Is';
 
 var scopes = ['https://www.googleapis.com/auth/calendar',
               'https://www.googleapis.com/auth/calendar.readonly'];
@@ -35,21 +35,13 @@ function handleAuthClick(event) {
 
 // Load the API and make an API call.  Display the results on the screen.
 function makeApiCall() {
-    // Step 4: Load the Google+ API
-    gapi.client.load('plus', 'v1', function () {
-        // Step 5: Assemble the API request
-        var request = gapi.client.plus.people.get({
-                                                      'userId': 'me'
-                                                  });
+    // Step 4: Load the GCalendar API
+    gapi.client.load('calendar', 'v3', function () {
+        // Step 5: Assemble the API request to list all calendars
+        var request = gapi.client.calendar.calendarList.list();
         // Step 6: Execute the API request
         request.execute(function (resp) {
-            var heading = document.createElement('h4');
-            var image = document.createElement('img');
-            image.src = resp.image.url;
-            heading.appendChild(image);
-            heading.appendChild(document.createTextNode(resp.displayName));
-
-            document.getElementById('content').appendChild(heading);
+            console.log(resp);
         });
     });
 }
