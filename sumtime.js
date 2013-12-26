@@ -99,18 +99,25 @@ function displayCalendarEventList (eventsResp) {
 
     $.each(events, function(index, event) {
         var el = $('<li></li>');
+        el.attr('data-event-id', event.id);
 
         var text = event.summary;
 
         if (event.recurrence) {
             var recurrence = event.recurrence[0].split(';'); // TODO can there ever be more than 1 recurrence rule??
             var recurrenceCount = recurrence[1].split('=')[1];
-            text = text + ' (x' + recurrenceCount + ')';
+            text += ' (x' + recurrenceCount + ')';
         }
 
-        el.text(text);
-        el.attr('data-event-id', event.id);
+        var start = moment(event.start.dateTime);
+        var end = moment(event.end.dateTime);
 
+        var diff = end.diff(start);
+        console.log(diff); // TODO remove
+
+        text += ' ' + start.format() + ' - ' + end.format();
+
+        el.text(text);
         container.append(el);
     });
 
