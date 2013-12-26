@@ -42,6 +42,9 @@ function makeApiCall() {
         // Step 6: Execute the API request
         request.execute(function (resp) {
             console.log(resp);
+            $.each(resp.items, function (index, item) {
+                $("body").append("<div>" + item.summary + "</div>")
+            })
         });
     });
 }
