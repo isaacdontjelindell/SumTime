@@ -52,8 +52,6 @@ function makeApiCall () {
 
 // handle the calendar list
 function displayCalendarList (resp) {
-    console.log(resp); // TODO remove (eventually)
-
     var container = $('<div></div>');
     container.addClass('calendar-list-container');
 
@@ -74,7 +72,7 @@ function displayCalendarList (resp) {
 
 
 function handleCalendarSelection (calendarId) {
-    console.log(calendarId); // TODO remove
+    console.log('Selected calendar id: ' + calendarId); // TODO remove
 
     // remove the calendar list
     $('.calendar-list-container').remove();
@@ -82,21 +80,19 @@ function handleCalendarSelection (calendarId) {
     // get all events on the selected calendar
     gapi.client.load('calendar', 'v3', function () {
         var request = gapi.client.calendar.events.list({
-            'calendarId':calendarId,
-            'singleEvents': true
+            'calendarId': calendarId,
+            'singleEvents': true,
+            'orderBy': 'startTime'
         });
 
-        request.execute(displayCalendarEventList);
+        request.execute(sumEventTimes);
     });
 }
 
-function displayCalendarEventList (eventsResp) {
+function sumEventTimes (eventsResp) {
     console.log(eventsResp);  // TODO remove eventually
 
     var events = eventsResp.items;
-
-    var container = $('<div></div>');
-    container.addClass('calendar-event-list-container');
 
     var totals = {};
     $.each(events, function(index, event) {
@@ -105,7 +101,6 @@ function displayCalendarEventList (eventsResp) {
         var start = moment(event.start.dateTime);
         var end = moment(event.end.dateTime);
         var duration = moment.duration(end.diff(start, 'minutes'), 'minutes');
-        console.log('Event length: ' + duration.asMinutes()); // TODO remove
 
         if (!totals[eventName]) {
             totals[eventName] = moment.duration(0);
@@ -114,13 +109,19 @@ function displayCalendarEventList (eventsResp) {
 
     });
 
+}
+
+function displayEventTimeTotals (totals) {
+    var container = $('<div></div>');
+    container.addClass('calendar-event-list-container');
+
     console.log('totals:'); // TODO remove
     console.log(totals);
 
     $.each(totals, function (key, item) {
         var el = $('<li></li>');
-        var text = key + ': ' + item.asHours() + ' hours';
 
+        var text = key + ': ' + item.asHours() + ' hours';
         el.text(text);
 
         container.append(el);
