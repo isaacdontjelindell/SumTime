@@ -97,27 +97,42 @@ function displayCalendarEventList (eventsResp) {
     var container = $('<div></div>');
     container.addClass('calendar-event-list-container');
 
+    var totals = {};
     $.each(events, function(index, event) {
-        var el = $('<li></li>');
-        el.attr('data-event-id', event.id);
+        var eventName = event.summary;
 
-        var text = event.summary;
-
-        if (event.recurrence) {
-            var recurrence = event.recurrence[0].split(';'); // TODO can there ever be more than 1 recurrence rule??
-            var recurrenceCount = recurrence[1].split('=')[1];
-            text += ' (x' + recurrenceCount + ')';
+        if (!totals[eventName]) {
+            totals[eventName] = moment.duration(0);
         }
 
         var start = moment(event.start.dateTime);
         var end = moment(event.end.dateTime);
+        var duration = moment.duration(end.diff(start, 'minutes'), 'minutes');
+        console.log('Event length: ' + duration.asMinutes()); // TODO remove
 
-        var diff = end.diff(start);
-        console.log(diff); // TODO remove
+        if (event.recurrence) {
+            var recurrence = event.recurrence[0].split(';'); // TODO can there ever be more than 1 recurrence rule??
+            var recurrenceCount = parseInt(recurrence[1].split('=')[1]);
 
-        text += ' ' + start.format() + ' - ' + end.format();
+            for (var i=0; i<recurrenceCount-1; i++) {
+                duration = duration.add(duration);
+            }
+        }
+
+        totals[eventName].add(duration);
+        console.log('Total event length: ' + duration.asMinutes());
+
+    });
+
+    console.log('totals:'); // TODO remove
+    console.log(totals);
+
+    $.each(totals, function (key, item) {
+        var el = $('<li></li>');
+        var text = key + ': ' + item.asHours() + ' hours';
 
         el.text(text);
+
         container.append(el);
     });
 
