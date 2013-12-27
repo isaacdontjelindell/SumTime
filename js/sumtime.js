@@ -77,16 +77,58 @@ function handleCalendarSelection (calendarId) {
     // remove the calendar list
     $('.calendar-list-container').remove();
 
+    // ask for the date range
+    var start = $('<input />');
+    start.attr('type', 'text');
+    start.addClass('datepicker start-date');
+    start.attr('placeholder', 'Start date');
+
+    var end = $('<input />');
+    end.attr('type', 'text');
+    end.addClass('datepicker end-date');
+    end.attr('placeholder', 'End date');
+
+    var submitButton = $('<button></button>');
+    submitButton.attr('type', 'button');
+    submitButton.attr('onclick', 'getEvents("' + calendarId + '");');
+    submitButton.addClass('submit-button');
+    submitButton.text('Sum Event Times');
+
+    var body = $('body');
+    body.append(start);
+    body.append(end);
+    body.append(submitButton);
+
+    // activate datepicker
+    $('.datepicker.start-date').datepicker({format: "mm/dd/yyyy"});
+    $('.datepicker.end-date').datepicker({format: "mm/dd/yyyy"});
+}
+
+function getEvents(calendarId) {
+    var start = moment($('.start-date').val());
+    var end = moment($('.end-date').val());
+
+    // set end datetime to midnight
+    end.hour('24');
+
+    // remove the start, end, and submit button
+    $('.start-date').remove();
+    $('.end-date').remove();
+    $('.submit-button').remove();
+
     // get all events on the selected calendar
     gapi.client.load('calendar', 'v3', function () {
         var request = gapi.client.calendar.events.list({
             'calendarId': calendarId,
             'singleEvents': true,
-            'orderBy': 'startTime'
+            'orderBy': 'startTime',
+            'timeMin': start.toDate(),
+            'timeMax': end.toDate()
         });
 
         request.execute(sumEventTimes);
     });
+
 }
 
 function sumEventTimes (eventsResp) {
@@ -106,9 +148,9 @@ function sumEventTimes (eventsResp) {
             totals[eventName] = moment.duration(0);
         }
         totals[eventName].add(duration);
-
     });
 
+    displayEventTimeTotals(totals);
 }
 
 function displayEventTimeTotals (totals) {
