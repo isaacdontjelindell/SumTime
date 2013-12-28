@@ -103,8 +103,8 @@ function handleCalendarSelection (calendarId) {
     $('.instructions').text(text);
 
     // activate datepicker
-    $('.datepicker.start-date').datepicker({format: "mm/dd/yyyy"});
-    $('.datepicker.end-date').datepicker({format: "mm/dd/yyyy"});
+    $('.datepicker.start-date').datepicker({format: "mm/dd/yyyy", autoclose: true});
+    $('.datepicker.end-date').datepicker({format: "mm/dd/yyyy", autoclose: true});
 }
 
 function getEvents(calendarId) {
