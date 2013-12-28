@@ -5,9 +5,7 @@
 var clientId = '935106300740-kug08d5pcg9rl6u68trr5qeo4fonf1m4.apps.googleusercontent.com';
 var apiKey = 'AIzaSyAgnIILA5vo46DFldSndtc6luC3Nwlj8Is';
 
-var scopes = [
-              'https://www.googleapis.com/auth/calendar.readonly'
-             ];
+var scopes = ['https://www.googleapis.com/auth/calendar.readonly'];
 
 function handleClientLoad() {
     gapi.client.setApiKey(apiKey);
@@ -36,8 +34,6 @@ function handleAuthClick(event) {
 }
 /* end Oauth boilerplate */
 
-
-// load the API and exercise it
 function makeApiCall () {
     // load the GCalendar API
     gapi.client.load('calendar', 'v3', function () {
@@ -62,7 +58,6 @@ function displayCalendarList (resp) {
     $.each(resp.items, function (index, item) {
         var el = $("<li></li>");
         el.addClass('calendar-list-item');
-
 
         var button = $('<button></button>');
         button.text(item.summary);
@@ -150,9 +145,9 @@ function sumEventTimes (eventsResp) {
         var duration = moment.duration(end.diff(start, 'minutes'), 'minutes');
 
         if (!totals[eventName]) {
-            totals[eventName] = moment.duration(0);
+            totals[eventName] = {duration: moment.duration(0)}
         }
-        totals[eventName].add(duration);
+        totals[eventName].duration.add(duration);
     });
 
     displayEventTimeTotals(totals);
@@ -164,14 +159,36 @@ function displayEventTimeTotals (totals) {
     var container = $('<div></div>');
     container.addClass('calendar-event-list-container');
 
-    $.each(totals, function (key, item) {
-        var el = $('<li></li>');
+    // build the datatables table
+    var table = $('<table></table>');
+    table.attr('id', 'calendar-event-list-table');
 
-        var text = key + ': ' + item.asHours() + ' hours';
-        el.text(text);
+    var html = '<thead>' +
+        '<tr><th>Event Name</th><th>Total Time</th></tr>' +
+        '</thead>' +
+        '<tbody>' +
+        '</tbody>';
+    table.html(html);
 
-        container.append(el);
-    });
-
+    container.append(table);
     $('#page-content').append(container);
+
+    var tbody = $('#calendar-event-list-table').find('tbody');
+
+    $.each(totals, function (key, item) {
+        item.totalHours = item.duration.asHours(); // not really needed, might be useful in the future
+
+        var tr = $('<tr></tr>');
+
+        var td1 = $('<td></td>');
+        td1.text(key);
+
+        var td2 = $('<td></td>');
+        td2.text(item.totalHours);
+
+        tr.append(td1);
+        tr.append(td2);
+        tbody.append(tr);
+    });
+    console.log(totals);
 }
