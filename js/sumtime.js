@@ -5,7 +5,6 @@
 var clientId = '935106300740-kug08d5pcg9rl6u68trr5qeo4fonf1m4.apps.googleusercontent.com';
 var apiKey = 'AIzaSyAgnIILA5vo46DFldSndtc6luC3Nwlj8Is';
 
-// TODO we *should* only need readonly access
 var scopes = [
               'https://www.googleapis.com/auth/calendar.readonly'
              ];
@@ -52,12 +51,18 @@ function makeApiCall () {
 
 // handle the calendar list
 function displayCalendarList (resp) {
-    var container = $('<div></div>');
+    var instructionsHeading = $('<div></div>');
+    instructionsHeading.addClass('instructions');
+    var text = '1. Choose the calendar below for which you wish to summarize total times.';
+    instructionsHeading.text(text);
+
+    var container = $('<ul></ul>');
     container.addClass('calendar-list-container');
 
     $.each(resp.items, function (index, item) {
         var el = $("<li></li>");
         el.addClass('calendar-list-item');
+
 
         var button = $('<button></button>');
         button.text(item.summary);
@@ -69,13 +74,12 @@ function displayCalendarList (resp) {
         container.append(el);
     });
 
+    $('#page-content').append(instructionsHeading);
     $('#page-content').append(container);
 }
 
 
 function handleCalendarSelection (calendarId) {
-    console.log('Selected calendar id: ' + calendarId); // TODO remove
-
     // remove the calendar list
     $('.calendar-list-container').remove();
 
@@ -100,6 +104,8 @@ function handleCalendarSelection (calendarId) {
     body.append(start);
     body.append(end);
     body.append(submitButton);
+    var text = '2. Choose the range of dates for which you wish to summarize total times.';
+    $('.instructions').text(text);
 
     // activate datepicker
     $('.datepicker.start-date').datepicker({format: "mm/dd/yyyy"});
@@ -130,12 +136,9 @@ function getEvents(calendarId) {
 
         request.execute(sumEventTimes);
     });
-
 }
 
 function sumEventTimes (eventsResp) {
-    console.log(eventsResp);  // TODO remove eventually
-
     var events = eventsResp.items;
 
     var totals = {};
@@ -156,11 +159,10 @@ function sumEventTimes (eventsResp) {
 }
 
 function displayEventTimeTotals (totals) {
+    $('.instructions').remove();
+
     var container = $('<div></div>');
     container.addClass('calendar-event-list-container');
-
-    console.log('totals:'); // TODO remove
-    console.log(totals);
 
     $.each(totals, function (key, item) {
         var el = $('<li></li>');
