@@ -190,5 +190,8 @@ function displayEventTimeTotals (totals) {
         tr.append(td2);
         tbody.append(tr);
     });
-    console.log(totals);
+
+    $('#calendar-event-list-table').dataTable({'bPaginate': false});
+
+    console.log(totals); // TODO remove
 }
