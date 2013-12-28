@@ -1,14 +1,14 @@
 /* Copyright (c) 2013 Isaac Dontje Lindell
  * This is free software. See LICENSE for more information */
 
-
 /* oauth boilerplate */
 var clientId = '935106300740-kug08d5pcg9rl6u68trr5qeo4fonf1m4.apps.googleusercontent.com';
 var apiKey = 'AIzaSyAgnIILA5vo46DFldSndtc6luC3Nwlj8Is';
 
-// TODO we should only need readonly access
-var scopes = ['https://www.googleapis.com/auth/calendar',
-              'https://www.googleapis.com/auth/calendar.readonly'];
+// TODO we *should* only need readonly access
+var scopes = [
+              'https://www.googleapis.com/auth/calendar.readonly'
+             ];
 
 function handleClientLoad() {
     gapi.client.setApiKey(apiKey);
@@ -22,10 +22,10 @@ function checkAuth() {
 function handleAuthResult (authResult) {
     var authorizeButton = document.getElementById('authorize-button');
     if (authResult && !authResult.error) {
-        authorizeButton.style.visibility = 'hidden';
+        authorizeButton.style.display = 'none';
         makeApiCall();
     } else {
-        authorizeButton.style.visibility = '';
+        authorizeButton.style.display = 'inherit';
         authorizeButton.onclick = handleAuthClick;
     }
 }
@@ -57,17 +57,19 @@ function displayCalendarList (resp) {
 
     $.each(resp.items, function (index, item) {
         var el = $("<li></li>");
+        el.addClass('calendar-list-item');
 
         var button = $('<button></button>');
         button.text(item.summary);
         button.attr('data-calendar-id', item.id);
+        button.addClass('btn btn-default');
         button.attr('onclick', 'handleCalendarSelection("' + item.id + '");');
 
         el.append(button);
         container.append(el);
     });
 
-    $('body').append(container);
+    $('#page-content').append(container);
 }
 
 
@@ -91,10 +93,10 @@ function handleCalendarSelection (calendarId) {
     var submitButton = $('<button></button>');
     submitButton.attr('type', 'button');
     submitButton.attr('onclick', 'getEvents("' + calendarId + '");');
-    submitButton.addClass('submit-button');
+    submitButton.addClass('submit-button btn btn-success');
     submitButton.text('Sum Event Times');
 
-    var body = $('body');
+    var body = $('#page-content');
     body.append(start);
     body.append(end);
     body.append(submitButton);
@@ -169,5 +171,5 @@ function displayEventTimeTotals (totals) {
         container.append(el);
     });
 
-    $('body').append(container);
+    $('#page-content').append(container);
 }
