@@ -138,7 +138,7 @@ function sumEventTimes (eventsResp) {
 
     var totals = {};
     $.each(events, function(index, event) {
-        var eventName = event.summary;
+        var eventName = event.summary.trim();
 
         var start = moment(event.start.dateTime);
         var end = moment(event.end.dateTime);
