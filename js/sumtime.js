@@ -136,21 +136,25 @@ function getEvents(calendarId) {
 function sumEventTimes (eventsResp) {
     var events = eventsResp.items;
 
-    var totals = {};
-    $.each(events, function(index, event) {
-        var eventName = event.summary.trim();
+    if (events) {
+        var totals = {};
+        $.each(events, function(index, event) {
+            var eventName = event.summary.trim();
 
-        var start = moment(event.start.dateTime);
-        var end = moment(event.end.dateTime);
-        var duration = moment.duration(end.diff(start, 'minutes'), 'minutes');
+            var start = moment(event.start.dateTime);
+            var end = moment(event.end.dateTime);
+            var duration = moment.duration(end.diff(start, 'minutes'), 'minutes');
 
-        if (!totals[eventName]) {
-            totals[eventName] = {duration: moment.duration(0)}
-        }
-        totals[eventName].duration.add(duration);
-    });
+            if (!totals[eventName]) {
+                totals[eventName] = {duration: moment.duration(0)}
+            }
+            totals[eventName].duration.add(duration);
+        });
 
-    displayEventTimeTotals(totals);
+        displayEventTimeTotals(totals);
+    } else {
+        $('.instructions').text("That calendar doesn't have any events in the date range you selected.");
+    }
 }
 
 function displayEventTimeTotals (totals) {
