@@ -154,6 +154,11 @@ function sumEventTimes (eventsResp) {
         displayEventTimeTotals(totals);
     } else {
         $('.instructions').text("That calendar doesn't have any events in the date range you selected.");
+
+        var link = $('<br /><br /><a href="/">Start Over</a>');
+
+        $('.instructions').append(link);
+
     }
 }
 
